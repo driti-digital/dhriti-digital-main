@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { client } from '@/sanity/client';
+import type { PortableTextBlock } from '@portabletext/types';
 
 // Define a type for our post data
 export type Post = {
@@ -9,6 +10,7 @@ export type Post = {
     current: string;
   };
   publishedAt: string;
+  body?: PortableTextBlock[]; // Add the body property as optional
 };
 
 // Query to fetch all posts, ordered by publication date
