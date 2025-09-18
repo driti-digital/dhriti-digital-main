@@ -2,6 +2,11 @@ import { client } from '@/sanity/client';
 import { PortableText } from '@portabletext/react';
 import { Post } from '../page'; // Re-use the Post type from the blog list page
 
+// Define the type for the component's props
+type Props = {
+  params: { slug: string };
+};
+
 // This function tells Next.js which blog post pages to build ahead of time
 export async function generateStaticParams() {
   const posts = await client.fetch<Post[]>(`*[_type == "post"]{"slug": slug.current}`);
@@ -34,9 +39,8 @@ function formatDate(dateString: string) {
   });
 }
 
-// The page component itself
-// Note the updated props type which fixes the build error
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+// The page component now uses the explicit Props type
+export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(params.slug);
 
   if (!post) {
@@ -52,7 +56,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </p>
         
         <div className="prose lg:prose-xl">
-          {/* This check ensures we only render PortableText if post.body exists */}
           {post.body && <PortableText value={post.body} />}
         </div>
       </div>
