@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google"; // Import the Inter font
 import "./globals.css";
-import Header from "@/components/Header"; // Import Header
-import Footer from "@/components/Footer"; // Import Footer
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Initialize the Inter font
+const inter = Inter({ subsets: ["latin"] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// Update metadata for your site
 export const metadata: Metadata = {
   title: "Dhriti Digital",
   description: "Digital Marketing for Manufacturers",
@@ -27,10 +19,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        // Combine existing font classes with new layout classes
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
-      >
+      {/* Use the Inter font className */}
+      <body className={`${inter.className} antialiased flex flex-col min-h-screen`}>
         <Header />
         <main className="flex-grow container mx-auto px-4">
           {children}
