@@ -8,7 +8,6 @@ type Props = {
 };
 
 // Define a specific, local type for a single post with a body.
-// This avoids any potential conflicts with the 'Post' type from the list page.
 type SinglePost = {
   _id: string;
   title: string;
@@ -29,7 +28,7 @@ export async function generateStaticParams() {
 // This function fetches the data for a single post.
 async function getPost(slug: string): Promise<SinglePost | null> {
   const post = await client.fetch<SinglePost>(
-    `*[_type == "post" && slug.current == $slug][0]{
+    `*[_type == "post" && slug.current == [slug]][0]{
       _id,
       title,
       publishedAt,
@@ -53,7 +52,6 @@ function formatDate(dateString: string) {
 export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(params.slug);
 
-  // Handle cases where the post or its body content is not found.
   if (!post || !post.body) {
     return <div>Post not found or has no content.</div>;
   }
