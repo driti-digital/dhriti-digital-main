@@ -2,12 +2,10 @@ import { client } from '@/sanity/client';
 import { PortableText } from '@portabletext/react';
 import type { PortableTextBlock } from '@portabletext/types';
 
-// Define the type for this page's props explicitly.
 type Props = {
   params: { slug: string };
 };
 
-// Define a specific, local type for a single post with a body.
 type SinglePost = {
   _id: string;
   title: string;
@@ -15,7 +13,6 @@ type SinglePost = {
   body: PortableTextBlock[];
 };
 
-// This function tells Next.js which blog post pages to build ahead of time.
 export async function generateStaticParams() {
   const posts = await client.fetch<{ slug: { current: string } }[]>(
     `*[_type == "post"]{"slug": slug.current}`
@@ -25,10 +22,10 @@ export async function generateStaticParams() {
   }));
 }
 
-// This function fetches the data for a single post.
 async function getPost(slug: string): Promise<SinglePost | null> {
+  // CORRECTED QUERY: Changed [slug] to $slug
   const post = await client.fetch<SinglePost>(
-    `*[_type == "post" && slug.current == [slug]][0]{
+    `*[_type == "post" && slug.current == $slug][0]{
       _id,
       title,
       publishedAt,
@@ -39,7 +36,6 @@ async function getPost(slug: string): Promise<SinglePost | null> {
   return post;
 }
 
-// Helper function to format the date.
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -48,7 +44,6 @@ function formatDate(dateString: string) {
   });
 }
 
-// The page component now uses the explicit Props type.
 export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(params.slug);
 
@@ -63,7 +58,6 @@ export default async function BlogPostPage({ params }: Props) {
         <p className="text-gray-500 text-sm mb-8">
           Published on {formatDate(post.publishedAt)}
         </p>
-        
         <div className="prose lg:prose-xl">
           <PortableText value={post.body} />
         </div>
