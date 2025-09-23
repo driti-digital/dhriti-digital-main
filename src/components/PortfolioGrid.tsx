@@ -1,8 +1,8 @@
-'use client';
+"use client"; // This is crucial - it marks this as a Client Component
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 
-// Define a type for our case study data for type safety
+// Assuming this is the type definition for a case study
 export type CaseStudy = {
   _id: string;
   clientName: string;
@@ -16,69 +16,56 @@ type PortfolioGridProps = {
 };
 
 export default function PortfolioGrid({ caseStudies }: PortfolioGridProps) {
-  const [activeIndustry, setActiveIndustry] = useState('All');
-  const [activeLocation, setActiveLocation] = useState('All');
+  // State to keep track of the active filters
+  const [activeIndustry, setActiveIndustry] = useState<string | null>(null);
+  const [activeLocation, setActiveLocation] = useState<string | null>(null);
 
-  // Memoize unique industries and locations to avoid recalculating on every render
-  const industries = useMemo(() => ['All', ...new Set(caseStudies.map(cs => cs.industry))], [caseStudies]);
-  const locations = useMemo(() => ['All', ...new Set(caseStudies.map(cs => cs.location))], [caseStudies]);
+  // Get unique industries and locations for filter buttons
+  const industries = [...new Set(caseStudies.map(cs => cs.industry))];
+  const locations = [...new Set(caseStudies.map(cs => cs.location))];
 
-  const filteredStudies = useMemo(() => {
-    return caseStudies.filter(study => {
-      const industryMatch = activeIndustry === 'All' || study.industry === activeIndustry;
-      const locationMatch = activeLocation === 'All' || study.location === activeLocation;
-      return industryMatch && locationMatch;
-    });
-  }, [caseStudies, activeIndustry, activeLocation]);
+  // Filter the case studies based on the active filters
+  const filteredStudies = caseStudies.filter(study => {
+    const industryMatch = activeIndustry ? study.industry === activeIndustry : true;
+    const locationMatch = activeLocation ? study.location === activeLocation : true;
+    return industryMatch && locationMatch;
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Filter UI */}
       <div className="flex flex-wrap gap-4 mb-8">
-        {/* Industry Filters */}
         <div>
-          <h3 className="font-bold mb-2">Filter by Industry:</h3>
-          <div className="flex flex-wrap gap-2">
-            {industries.map(industry => (
-              <button
-                key={industry}
-                onClick={() => setActiveIndustry(industry)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold ${activeIndustry === industry ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-              >
-                {industry}
-              </button>
-            ))}
-          </div>
+          <span className="font-bold mr-2">Industry:</span>
+          <button onClick={() => setActiveIndustry(null)} className={`px-3 py-1 rounded-full ${!activeIndustry ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>All</button>
+          {industries.map(industry => (
+            <button key={industry} onClick={() => setActiveIndustry(industry)} className={`px-3 py-1 rounded-full ml-2 ${activeIndustry === industry ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+              {industry}
+            </button>
+          ))}
         </div>
-        {/* Location Filters */}
         <div>
-          <h3 className="font-bold mb-2">Filter by Location:</h3>
-          <div className="flex flex-wrap gap-2">
-            {locations.map(location => (
-              <button
-                key={location}
-                onClick={() => setActiveLocation(location)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold ${activeLocation === location ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-              >
-                {location}
-              </button>
-            ))}
-          </div>
+          <span className="font-bold mr-2">Location:</span>
+          <button onClick={() => setActiveLocation(null)} className={`px-3 py-1 rounded-full ${!activeLocation ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>All</button>
+          {locations.map(location => (
+            <button key={location} onClick={() => setActiveLocation(location)} className={`px-3 py-1 rounded-full ml-2 ${activeLocation === location ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+              {location}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Portfolio Grid */}
+      {/* Grid of Case Studies */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredStudies.length > 0 ? (
-          filteredStudies.map(study => (
-            <div key={study._id} className="border rounded-lg p-6 shadow-md">
-              <h4 className="text-xl font-bold mb-2">{study.clientName}</h4>
-              <p className="text-gray-600 mb-4"><span className="font-semibold">Industry:</span> {study.industry} | <span className="font-semibold">Location:</span> {study.location}</p>
-              <p><span className="font-semibold">Challenge:</span> {study.challenge}</p>
-            </div>
-          ))
-        ) : (
-          <p>No case studies match the selected filters.</p>
-        )}
+        {filteredStudies.map(study => (
+          <div key={study._id} className="border rounded-lg p-6 shadow-lg">
+            <h3 className="text-2xl font-bold mb-2">{study.clientName}</h3>
+            <p className="text-sm text-gray-500 mb-2">
+              <span className="font-semibold">Industry:</span> {study.industry} | <span className="font-semibold">Location:</span> {study.location}
+            </p>
+            <p className="text-gray-700">{study.challenge}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
