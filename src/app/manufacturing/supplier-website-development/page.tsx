@@ -10,7 +10,7 @@ type ManufacturingService = {
 
 // GROQ query to fetch the service with the slug "supplier-website-development"
 // Make sure you have a document in Sanity with this slug.
-const serviceQuery = `*[_type == "manufacturingService" && slug.current == "supplier-website-development"][0]{
+const serviceQuery = `*[_type == "service" && slug.current == "supplier-website-development"][0]{
   title,
   subHeadline,
   content
